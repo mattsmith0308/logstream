@@ -61,6 +61,12 @@ module Logstream
             end
             ws.close
             EM.stop
+          when 'disconnect'
+            color('logtailor-disconnect', msg['code']) do
+              puts "#{msg.inspect}"
+            end
+            ws.close
+            EM.stop
           when 'available'
             send_msg(ws, { 'cmd' => 'enable', 'type' => msg['type'], 'server' => msg['server'] }) if @opts[:types].include?(msg['type'])
           when 'line'
@@ -102,6 +108,7 @@ module Logstream
     YELLOW = '33;1'
     BLUE = '34;1'
     CYAN = '46;37;1'
+    GREY = '37;0'
     LOG_TYPE_COLORS = {
       'apache-request' => {
         /^5/ => RED,
@@ -118,6 +125,7 @@ module Logstream
       'drupal-watchdog' => BLUE,
       'logtailor-error' => RED,
       'logtailor-debug' => CYAN,
+      'logtailor-disconnect' => GREY,
     }
 
     def color(type, status)
